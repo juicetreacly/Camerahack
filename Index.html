@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Camera Stream</title>
+</head>
+<body>
+    <h1>Camera Stream</h1>
+    <video id="localVideo" autoplay muted></video>
+    <script>
+        // Request camera permission and stream video
+        const videoElement = document.getElementById('localVideo');
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(stream => {
+                videoElement.srcObject = stream;
+
+                // WebRTC setup for streaming
+                const peerConnection = new RTCPeerConnection();
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+                // Send the stream to a signaling server
+                peerConnection.createOffer().then(offer => {
+                    peerConnection.setLocalDescription(offer);
+                    // Replace this with your signaling server logic
+                    console.log("Send this offer to the server:", offer);
+                });
+            })
+            .catch(error => {
+                console.error('Camera permission denied or error: ', error);
+                alert('Camera access is required!');
+            });
+    </script>
+</body>
+</html>
