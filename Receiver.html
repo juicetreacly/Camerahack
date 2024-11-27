@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream Viewer</title>
+</head>
+<body>
+    <h1>Live Stream</h1>
+    <video id="remoteVideo" autoplay playsinline></video>
+
+    <script>
+        const videoElement = document.getElementById('remoteVideo');
+        
+        // WebRTC setup for receiving the stream
+        const peerConnection = new RTCPeerConnection();
+
+        // Placeholder for signaling server logic
+        peerConnection.ontrack = event => {
+            videoElement.srcObject = event.streams[0];
+        };
+
+        // Simulate receiving an offer from the other site
+        async function connectToStream() {
+            // Replace this with your signaling server logic
+            const offer = prompt("Paste the SDP offer from the other website:");
+
+            if (offer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(JSON.parse(offer)));
+
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+
+                console.log("Send this answer to the server:", JSON.stringify(peerConnection.localDescription));
+            } else {
+                alert("No offer provided!");
+            }
+        }
+
+        connectToStream();
+    </script>
+</body>
+</html>
